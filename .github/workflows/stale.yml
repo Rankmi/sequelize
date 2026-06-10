@@ -1,22 +1,22 @@
-name: "Stale issue handler"
+name: "Close stale PRs"
 on:
-  workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "30 1 * * *"
+  workflow_dispatch:
 
 jobs:
   stale:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
     steps:
-      - uses: actions/stale@main
-        id: stale
+      - uses: actions/stale@v9
         with:
-          stale-issue-label: "stale"
-          stale-issue-message: 'This issue has been automatically marked as stale because it has been open for 14 days without activity. It will be closed if no further activity occurs within the next 14 days. If this is still an issue, just leave a comment or remove the "stale" label. 🙂'
-          days-before-stale: 14
-          days-before-close: 14
-          operations-per-run: 1000
-          days-before-pr-close: -1
-          exempt-issue-labels: 'type: bug, type: docs, type: feature, type: other, type: performance, type: refactor, type: typescript' # All 'type: ' labels
-      - name: Print outputs
-        run: echo ${{ join(steps.stale.outputs.*, ',') }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-pr-message: "Este PR está inactivo desde hace 7 días. Si no hay actividad en los próximos 3 días, será cerrado automáticamente."
+          close-pr-message: "Cerado por inactividad"
+          days-before-pr-stale: 7
+          days-before-pr-close: 3
+          days-before-issue-stale: -1
+          days-before-issue-close: -1
